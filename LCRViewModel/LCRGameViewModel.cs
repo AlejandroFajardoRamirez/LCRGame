@@ -55,10 +55,19 @@ namespace LCRViewModel
 
             foreach (var simulation in SimulationGameList)
             {
-                simulation.RunSimulation();
+                var simulationTask = new Task(simulation.RunSimulation);
+                simulationTask.GetAwaiter().OnCompleted(() =>
+                {
+                    listCount--;
+                    if (listCount == 0)
+                    {
+                        _isRunningSimulation = false;
+                        RunSimulationCommandWrapper.CheckIsExecutable();
+                    }
+                });
+                tasks.Add(simulationTask);
+                simulationTask.Start();
             }
-            _isRunningSimulation = false;
-            RunSimulationCommandWrapper.CheckIsExecutable();
         }
 
         private bool CanRunSimulation(object parameter)
