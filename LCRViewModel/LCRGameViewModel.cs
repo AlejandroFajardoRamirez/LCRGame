@@ -8,7 +8,7 @@ using System.Windows.Input;
 namespace LCRViewModel
 {
     public class LCRGameViewModel : NotificationEnabled
-    {
+    {        
 
         private int? _numberOfPlayers;
         public int? NumberOfPlayers
@@ -18,7 +18,7 @@ namespace LCRViewModel
             {
                 _numberOfPlayers = value;
                 OnPropertyChanged();
-                AddRowCommandWrapper.CheckIsExecutable();                
+                AddRowCommandWrapper.CheckIsExecutable();
             }
         }
 
@@ -42,6 +42,9 @@ namespace LCRViewModel
         private CommonCommand AddRowCommandWrapper;
         public ICommand AddRowCommand { get { return AddRowCommandWrapper; } }
 
+        private CommonCommand DeleteRowCommandWrapper;
+        public ICommand DeleteRowCommand { get { return DeleteRowCommandWrapper; } }
+
         private CommonCommand RunSimulationCommandWrapper;
         public ICommand RunSimulationCommand { get { return RunSimulationCommandWrapper; } }
 
@@ -49,13 +52,13 @@ namespace LCRViewModel
 
         public LCRGameViewModel()
         {
-            RunSimulationCommandWrapper = new CommonCommand(StartSimulation, CanRunSimulation);
             InitializeSimulationListInput();
 
-
-            AddRowCommandWrapper = new CommonCommand(AddRow, CanAddRow);            
+            RunSimulationCommandWrapper = new CommonCommand(StartSimulation, CanRunSimulation);
+            AddRowCommandWrapper = new CommonCommand(AddRow, CanAddRow);
+            DeleteRowCommandWrapper = new CommonCommand(DeleteRow, (p) => { return !_isRunningSimulation; });
         }
-
+      
         private void InitializeSimulationListInput() {
             SimulationGameList = new ObservableCollection<SimulationViewModel> {
                 new SimulationViewModel(3,100),
@@ -123,10 +126,22 @@ namespace LCRViewModel
 
         }
 
+        private void DeleteRow(object rowId)
+        {
+            var selectedSimulation = SimulationGameList.FirstOrDefault(s => s.SimulationId == rowId.ToString());
+            if (selectedSimulation != null)
+            {
+                SimulationGameList.Remove(selectedSimulation);
+                OnPropertyChanged("SimulationGameList");
+            }
+            CheckExcecutables();
+        }
+       
         private void CheckExcecutables()
         {
             RunSimulationCommandWrapper.CheckIsExecutable();
-            AddRowCommandWrapper.CheckIsExecutable();            
+            AddRowCommandWrapper.CheckIsExecutable();
+            DeleteRowCommandWrapper.CheckIsExecutable();
         }
     }
 }

@@ -1,10 +1,14 @@
 ﻿using LCRModel;
 using LCRViewModel.Helpers;
+using System;
 
 namespace LCRViewModel
 {
     public class SimulationViewModel : NotificationEnabled
     {
+        private Guid _simulationId;
+        public string SimulationId { get { return _simulationId.ToString(); } }
+
         private int _numberOfPlayers;
         public int NumberOfPlayers { get { return _numberOfPlayers; } }
 
@@ -16,16 +20,16 @@ namespace LCRViewModel
 
         public int ShortestGame { get { return _simulation.ShortestGame; } }
         public int LongestGame { get { return _simulation.LongestGame; } }
-        public int AverageGame { get { return _simulation.AverageGame; } } 
+        public int AverageGame { get { return _simulation.AverageGame; } }
 
         private Simulation _simulation { get; set; }
 
         public SimulationViewModel(int numberOfPlayers, int numberOfGames)
         {
             _numberOfPlayers = numberOfPlayers;
-            _numberOfGames = numberOfGames;            
-
-            _simulation = new Simulation(new LCRGame(_numberOfPlayers),_numberOfGames);            
+            _numberOfGames = numberOfGames;
+            _simulationId = Guid.NewGuid();
+            _simulation = new Simulation(new LCRGame(_numberOfPlayers),_numberOfGames);
         }
 
         public void RunSimulation()
@@ -42,7 +46,5 @@ namespace LCRViewModel
             _simulationStatus = "Complete";
             OnPropertyChanged("SimulationStatus");
         }
-
-
     }
 }

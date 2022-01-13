@@ -20,7 +20,16 @@
 
         <ListView Margin="10,50,11,50"  ItemsSource="{Binding SimulationGameList, Source={StaticResource BoardViewModel }}" >
             <ListView.View>
-                <GridView>                   
+                <GridView>
+                    <GridViewColumn Width="55">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Delete" Command="{Binding DeleteRowCommand, Mode=OneWay, Source={StaticResource BoardViewModel}}" 
+                                        CommandParameter="{Binding SimulationId, Mode=OneWay}"  >
+                                </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Players" DisplayMemberBinding="{Binding Path= NumberOfPlayers}" Width="50" />
                     <GridViewColumn Header="Number of Games" DisplayMemberBinding="{Binding Path= NumberOfGames}"   Width="130"/>
 
