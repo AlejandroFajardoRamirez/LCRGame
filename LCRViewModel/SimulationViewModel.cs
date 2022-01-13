@@ -4,8 +4,10 @@ using System.ComponentModel;
 
 namespace LCRViewModel
 {
-    public class SimulationViewModel 
-    {        
+    public class SimulationViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private int _numberOfPlayers;
         public int NumberOfPlayers { get { return _numberOfPlayers; } }
 
@@ -26,6 +28,23 @@ namespace LCRViewModel
             _simulation = new Simulation(new LCRGame(_numberOfPlayers),_numberOfGames);            
         }
 
-       
+        private void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public void RunSimulation()
+        {
+            _simulation.RunSimulations();
+
+            OnPropertyChanged("ShortestGame");
+            OnPropertyChanged("LongestGame");
+            OnPropertyChanged("AverageGame");
+        }
+
+
     }
 }

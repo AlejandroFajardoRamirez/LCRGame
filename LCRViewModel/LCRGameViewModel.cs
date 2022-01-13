@@ -12,14 +12,19 @@ namespace LCRViewModel
         
         public SimulationViewModel SelectedSimulation { get; set; }
 
+        private bool _isRunningSimulation;
+
+        private CommonCommand RunSimulationCommandWrapper;
+        public ICommand RunSimulationCommand { get { return RunSimulationCommandWrapper; } }
+
         public ObservableCollection<SimulationViewModel> SimulationGameList { get; set; }
 
         public LCRGameViewModel()
-        {  
+        {
             InitializeSimulationListInput();
-        }
-
-        
+            
+            RunSimulationCommandWrapper = new CommonCommand(StartSimulation, CanRunSimulation);
+        }       
                 
 
         private void InitializeSimulationListInput() {
@@ -36,6 +41,30 @@ namespace LCRViewModel
 
         }
 
+        private void StartSimulation(object parameter)
+        {
+            _isRunningSimulation = true;
+            RunSimulationCommandWrapper.CheckIsExecutable();
+            RunSimulations();
+        }
+
+        private void RunSimulations()
+        {
+            var tasks = new List<Task>();
+            var listCount = SimulationGameList.Count();
+
+            foreach (var simulation in SimulationGameList)
+            {
+                simulation.RunSimulation();
+            }
+            _isRunningSimulation = false;
+            RunSimulationCommandWrapper.CheckIsExecutable();
+        }
+
+        private bool CanRunSimulation(object parameter)
+        {
+            return SimulationGameList != null && SimulationGameList.Any() && !_isRunningSimulation;
+        }
 
     }
 }
