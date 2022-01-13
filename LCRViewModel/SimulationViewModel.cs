@@ -1,13 +1,10 @@
 ﻿using LCRModel;
-using System;
-using System.ComponentModel;
+using LCRViewModel.Helpers;
 
 namespace LCRViewModel
 {
-    public class SimulationViewModel : INotifyPropertyChanged
+    public class SimulationViewModel : NotificationEnabled
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-
         private int _numberOfPlayers;
         public int NumberOfPlayers { get { return _numberOfPlayers; } }
 
@@ -29,14 +26,6 @@ namespace LCRViewModel
             _numberOfGames = numberOfGames;            
 
             _simulation = new Simulation(new LCRGame(_numberOfPlayers),_numberOfGames);            
-        }
-
-        private void OnPropertyChanged(string propertyName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
         }
 
         public void RunSimulation()

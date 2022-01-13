@@ -1,18 +1,46 @@
 ﻿using LCRViewModel.Helpers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace LCRViewModel
 {
-    public class LCRGameViewModel { 
-        
+    public class LCRGameViewModel : NotificationEnabled
+    {
+
+        private int? _numberOfPlayers;
+        public int? NumberOfPlayers
+        {
+            get { return _numberOfPlayers; }
+            set
+            {
+                _numberOfPlayers = value;
+                OnPropertyChanged();
+                AddRowCommandWrapper.CheckIsExecutable();                
+            }
+        }
+
+        private int? _numberOfGames;
+        public int? NumberOfGames
+        {
+            get { return _numberOfGames; }
+            set
+            {
+                _numberOfGames = value;
+                OnPropertyChanged();
+                AddRowCommandWrapper.CheckIsExecutable();
+            }
+        }
+
         public SimulationViewModel SelectedSimulation { get; set; }
 
         private bool _isRunningSimulation;
+
+
+        private CommonCommand AddRowCommandWrapper;
+        public ICommand AddRowCommand { get { return AddRowCommandWrapper; } }
 
         private CommonCommand RunSimulationCommandWrapper;
         public ICommand RunSimulationCommand { get { return RunSimulationCommandWrapper; } }
@@ -21,11 +49,12 @@ namespace LCRViewModel
 
         public LCRGameViewModel()
         {
-            InitializeSimulationListInput();
-            
             RunSimulationCommandWrapper = new CommonCommand(StartSimulation, CanRunSimulation);
-        }       
-                
+            InitializeSimulationListInput();
+
+
+            AddRowCommandWrapper = new CommonCommand(AddRow, CanAddRow);            
+        }
 
         private void InitializeSimulationListInput() {
             SimulationGameList = new ObservableCollection<SimulationViewModel> {
@@ -44,7 +73,7 @@ namespace LCRViewModel
         private void StartSimulation(object parameter)
         {
             _isRunningSimulation = true;
-            RunSimulationCommandWrapper.CheckIsExecutable();
+            CheckExcecutables();
             RunSimulations();
         }
 
@@ -62,7 +91,7 @@ namespace LCRViewModel
                     if (listCount == 0)
                     {
                         _isRunningSimulation = false;
-                        RunSimulationCommandWrapper.CheckIsExecutable();
+                        CheckExcecutables();
                     }
                 });
                 tasks.Add(simulationTask);
@@ -75,5 +104,29 @@ namespace LCRViewModel
             return SimulationGameList != null && SimulationGameList.Any() && !_isRunningSimulation;
         }
 
+        private void AddRow(object parameter)
+        {
+            SimulationGameList.Add(new SimulationViewModel(NumberOfPlayers.Value, NumberOfGames.Value));
+
+            NumberOfGames = null;
+            NumberOfPlayers = null;
+            OnPropertyChanged("SimulationGameList");
+
+            CheckExcecutables();
+        }
+
+        private bool CanAddRow(object parameter)
+        {
+            return
+                NumberOfPlayers.GetValueOrDefault() >= 3 &&
+                NumberOfGames.GetValueOrDefault() > 0 && !_isRunningSimulation;
+
+        }
+
+        private void CheckExcecutables()
+        {
+            RunSimulationCommandWrapper.CheckIsExecutable();
+            AddRowCommandWrapper.CheckIsExecutable();            
+        }
     }
 }

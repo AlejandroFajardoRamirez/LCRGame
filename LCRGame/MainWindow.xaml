@@ -10,7 +10,15 @@
         <vm:LCRGameViewModel x:Key="BoardViewModel" ></vm:LCRGameViewModel>
     </Window.Resources>
     <Grid>
-        <ListView Margin="10,10,10,50"  ItemsSource="{Binding SimulationGameList, Source={StaticResource BoardViewModel }}" >
+        <Label  Content="Number of Players"   HorizontalAlignment="Left" Margin="10,14,0,0" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="129,15,0,0"  VerticalAlignment="Top" Width="136" Text="{Binding NumberOfPlayers, Source={StaticResource BoardViewModel}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+        <Label  Content="Number of Games"  HorizontalAlignment="Left" Margin="293,14,0,0" VerticalAlignment="Top" />
+        <TextBox Height="24" HorizontalAlignment="Left" Margin="436,12,0,0"  VerticalAlignment="Top" Width="136" Text="{Binding NumberOfGames, Source={StaticResource BoardViewModel}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <Button Content="Add" Padding="10,5 "  VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,8,11,0" Command="{Binding AddRowCommand, Mode=OneWay, Source={StaticResource BoardViewModel}}" />
+
+        <ListView Margin="10,50,11,50"  ItemsSource="{Binding SimulationGameList, Source={StaticResource BoardViewModel }}" >
             <ListView.View>
                 <GridView>                   
                     <GridViewColumn Header="Players" DisplayMemberBinding="{Binding Path= NumberOfPlayers}" Width="50" />
