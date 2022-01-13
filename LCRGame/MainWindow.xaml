@@ -20,6 +20,7 @@
                     <GridViewColumn Header="Longest Game (turns)" DisplayMemberBinding="{Binding Path= LongestGame}"   Width="150"/>
                     <GridViewColumn Header="Average Game (turns)" DisplayMemberBinding="{Binding Path= AverageGame}"   Width="150"/>
 
+                    <GridViewColumn Header="Status" DisplayMemberBinding="{Binding Path= SimulationStatus}"   Width="80"/>
                 </GridView>
             </ListView.View>
         </ListView>

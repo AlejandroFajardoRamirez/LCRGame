@@ -14,6 +14,9 @@ namespace LCRViewModel
         private int _numberOfGames;
         public int NumberOfGames { get { return _numberOfGames; } }
 
+        private string _simulationStatus;
+        public string SimulationStatus { get { return _simulationStatus; } }
+
         public int ShortestGame { get { return _simulation.ShortestGame; } }
         public int LongestGame { get { return _simulation.LongestGame; } }
         public int AverageGame { get { return _simulation.AverageGame; } } 
@@ -38,11 +41,17 @@ namespace LCRViewModel
 
         public void RunSimulation()
         {
+            _simulationStatus = "Running";
+            OnPropertyChanged("SimulationStatus");
+
             _simulation.RunSimulations();
 
             OnPropertyChanged("ShortestGame");
             OnPropertyChanged("LongestGame");
             OnPropertyChanged("AverageGame");
+
+            _simulationStatus = "Complete";
+            OnPropertyChanged("SimulationStatus");
         }
 
 
