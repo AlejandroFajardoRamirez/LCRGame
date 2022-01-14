@@ -1,5 +1,4 @@
 ﻿using LCRViewModel.Helpers;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -82,22 +81,31 @@ namespace LCRViewModel
 
         private void RunSimulations()
         {
-            var tasks = new List<Task>();
             var listCount = SimulationGameList.Count();
 
             foreach (var simulation in SimulationGameList)
             {
                 var simulationTask = new Task(simulation.RunSimulation);
+                var endTask = new Task(() => { 
+                    _isRunningSimulation = false; 
+                });
+
+                endTask.GetAwaiter().OnCompleted(() => { 
+                    CheckExcecutables(); 
+                }); 
+
                 simulationTask.GetAwaiter().OnCompleted(() =>
                 {
-                    listCount--;
-                    if (listCount == 0)
+                    simulation.SimulationsFinished = new Task(() =>
                     {
-                        _isRunningSimulation = false;
-                        CheckExcecutables();
-                    }
+                        listCount--;
+                        if (listCount == 0)
+                        {
+                            endTask.Start();
+                        }
+                    });
+
                 });
-                tasks.Add(simulationTask);
                 simulationTask.Start();
             }
         }
